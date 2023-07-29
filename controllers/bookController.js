@@ -17,6 +17,45 @@ exports.getAllBooks = (req, res, next) => {
 }
 
 
+
+//create review of a book
+exports.createReview = (req, res, next) => {
+    const review = req.body.review;
+    const stars= req.body.stars;
+    const title= req.body.title;
+    const author= req.body.author;
+    const NYTSummary = req.body.NYTSummary;
+    if(
+      title==null||
+      stars==null||
+      review==null||
+      author==null||
+      NYTSummary==null
+     ){
+      res.status(400)
+      .json({ message: "Mandatory field is missing/null. " })
+    }else{
+      Book.create({
+        title: title,
+        stars: stars,
+        review: review,
+        author: author,
+        NYTSummary: NYTSummary,
+      })
+        .then(result => {
+  
+          res.status(201).json({
+            message: 'Review created successfully!',
+            Book: result
+          });
+        })
+       
+    }
+  
+    
+  }
+
+
 exports.searchAuthor= (req, res, next) =>{
     const author = req.params.author;
     console.log("author: " + author);
