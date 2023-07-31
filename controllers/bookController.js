@@ -56,7 +56,7 @@ exports.createReview = (req, res, next) => {
   }
 
 
-exports.searchAuthor= (req, res, next) =>{
+exports.searchAuthorNYT= (req, res, next) =>{
     const author = req.params.author;
     console.log("author: " + author);
     if (author==null){
@@ -67,7 +67,7 @@ exports.searchAuthor= (req, res, next) =>{
         .then((response)=>{
       const APIResponse= response.data.results;
             
-        console.log(APIResponse);
+       // console.log(APIResponse);
         res.status(200).json({APIResponse});
         }
         ) 
@@ -78,7 +78,7 @@ exports.searchAuthor= (req, res, next) =>{
 
 
 
-    exports.searchTitle= (req, res, next) =>{
+    exports.searchTitleNYT= (req, res, next) =>{
         const title = req.params.title;
         console.log("title: " + title);
         if (title==null){
@@ -97,3 +97,76 @@ exports.searchAuthor= (req, res, next) =>{
     
       
         }
+
+
+
+        //update book
+exports.updateBook = (req, res, next) => {
+  const id = req.params.id;
+  const updatedReview = req.body.review;
+  const updatedStars= req.body.stars;
+  const updatedTitle= req.body.title;
+  const updatedAuthor= req.body.author;
+  const updatedNYTSummary = req.body.NYTSummary;
+
+
+  if ( 
+    id==null||
+    updatedReview== null ||
+    updatedStars== null ||
+    updatedTitle== null||
+    updatedAuthor==null||
+    updatedNYTSummary==null  
+     ){
+    res.status(400)
+    .json({ message: "Mandatory field is missing/null. " })
+  }else{
+    Book.findByPk(id)
+    .then(book => {
+      if (!book) {
+        return res.status(404).json({ message: 'Book not found!' });
+      }
+      book.review = updatedReview;
+      book.stars= updatedStars;
+      book.title= updatedTitle;
+      book.author= updatedAuthor
+      book.NYTSummary= updatedNYTSummary
+      return book.save();
+    })
+    .then(result => {
+      res.status(200).json({message: 'Book updated!', book: result});
+    })
+    
+  
+  }
+  }
+
+
+  //delete Review
+exports.deleteReview = (req, res, next) => {
+  console.log("delete requested")
+  const id = req.body.id;
+  if (id==null || Number.isInteger(parseInt(id))== false){
+    res.status(400)
+    .json({ message: "Mandatory field is missing/null/not a integer. " })
+  }else{
+    Book.findByPk(id)
+    .then(book => {
+      if (!book) {
+        return res.status(404).json({ message: 'Book review not found!' });
+      }
+      return Book.destroy({
+        where: {
+          id: id
+        }
+      });
+    })
+    .then(result => {
+      res.status(200).json({ message: 'Book Review entry deleted!' });
+    })
+  
+       
+     
+}
+  }
+  
