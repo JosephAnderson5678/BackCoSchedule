@@ -2,6 +2,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const sequelize = require('./util/database');
 const Book = require('./models/BookReviewModel');
+
 const app = express();
 
 app.use(bodyparser.json());

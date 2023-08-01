@@ -1,7 +1,11 @@
 const axios = require('axios')
 const Book = require('../models/BookReviewModel.js');
-const sequelize = require('../util/database');
-const { Op } = require("sequelize");
+const sequelize = require("../models/BookReviewModel.js").sequelize;
+
+const Sequelize = require('sequelize');
+const Op = require("sequelize").Op;
+
+var NYTAPIKey = require('../NYTAPIKey.js');
 
 
 //get all books
@@ -63,7 +67,7 @@ exports.searchAuthorNYT= (req, res, next) =>{
         res.status(400)
         .json({ message: "Mandatory field is null" })
     }else{
-        axios.get(`https://api.nytimes.com/svc/books/v3/reviews.json?author=${author}&api-key=p7qfAefTAT6jUxWt8WfNUoX4Vy3WUm4f`)
+        axios.get(`https://api.nytimes.com/svc/books/v3/reviews.json?author=${author}&api-key=${NYTAPIKey} `)
         .then((response)=>{
       const APIResponse= response.data.results;
             
@@ -85,7 +89,7 @@ exports.searchAuthorNYT= (req, res, next) =>{
             res.status(400)
             .json({ message: "Mandatory field is null" })
         }else{
-            axios.get(`https://api.nytimes.com/svc/books/v3/reviews.json?title=${title}&api-key=p7qfAefTAT6jUxWt8WfNUoX4Vy3WUm4f`)
+            axios.get(`https://api.nytimes.com/svc/books/v3/reviews.json?title=${title}&api-key=${NYTAPIKey} `)
             .then((response)=>{
           const APIResponse= response.data.results;
                 
@@ -101,7 +105,7 @@ exports.searchAuthorNYT= (req, res, next) =>{
 
 
         //update book
-exports.updateBook = (req, res, next) => {
+exports.updateReview = (req, res, next) => {
   const id = req.params.id;
   const updatedReview = req.body.review;
   const updatedStars= req.body.stars;
@@ -144,8 +148,9 @@ exports.updateBook = (req, res, next) => {
 
   //delete Review
 exports.deleteReview = (req, res, next) => {
-  console.log("delete requested")
-  const id = req.body.id;
+  const id = req.params.id;
+  console.log("delete requested body: " +  req.params.id)
+
   if (id==null || Number.isInteger(parseInt(id))== false){
     res.status(400)
     .json({ message: "Mandatory field is missing/null/not a integer. " })
@@ -164,9 +169,71 @@ exports.deleteReview = (req, res, next) => {
     .then(result => {
       res.status(200).json({ message: 'Book Review entry deleted!' });
     })
+  }
+}
   
-       
+
+
+
+
+  
+    //get a review by their id. This is not currently used but will be used if problems with refresh on the front end start happening.
+exports.getReviewByID = (req, res, next) => {
+
+  const id = req.params.id;
+  if (id==null || Number.isInteger(parseInt(id))== false){
+    res.status(400)
+    .json({ message: "Mandatory field is missing/null/not a integer." })
+  }else{
+    Book.findByPk(id)
+    .then(book => {
+        if (!book) {
+            return res.status(404).json({ message: 'Review not found!' });
+        }
+        res.status(200).json({ book: book });
+    })
+
+  }
+}
+
+
+
+exports.searchReviewByAuthor = (req,res,next) => {
+  let lookupValue = req.params.author.toLowerCase();
+  const Op = require("sequelize").Op;
+
+  Book.findAll({
+    where: {
+      author: {
+        [Op.iLike]: '%'+lookupValue+ '%' // this is a case insensitive look up that will find Stephen King if you search king or King. 
+      }
+    }
+  }).then(book => {
+    if (!book) {
+        return res.status(404).json({ message: 'Review not found!' });
+    }
+    res.status(200).json({ book: book });
+})
      
 }
-  }
-  
+
+
+exports.searchReviewByTitle = (req,res,next) => {
+  let lookupValue = req.params.title.toLowerCase();
+  console.log(lookupValue);
+  const Op = require("sequelize").Op;
+
+  Book.findAll({
+    where: {
+      title: {
+        [Op.iLike]: '%'+lookupValue + '%'// this is a case insensitive look up that will find Doctor Sleep if you search sleep or Sleep or Doctor or doctor. 
+      }
+    }
+  }).then(book => {
+    if (!book) {
+        return res.status(404).json({ message: 'Title not found!' });
+    }
+    res.status(200).json({ book: book });
+})
+     
+}
