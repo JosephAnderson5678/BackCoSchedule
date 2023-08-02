@@ -177,7 +177,7 @@ exports.deleteReview = (req, res, next) => {
 
 
   
-    //get a review by their id. This is not currently used but will be used if problems with refresh on the front end start happening.
+    //get a review by their id. This is not currently used but will be used later when the front end is more ready for it.
 exports.getReviewByID = (req, res, next) => {
 
   const id = req.params.id;

@@ -1,4 +1,5 @@
 const controller = require('../controllers/bookController');
+const NYTController= require('../controllers/NYTController')
 const router = require('express').Router();
 router.get('/getall/', controller.getAllBooks); // localhost:3000/books/getall/
 router.post('/createreview/', controller.createReview); // localhost:3000/books/createreview/
@@ -11,6 +12,6 @@ router.get('/searchreviewbytitle/:title', controller.searchReviewByTitle); // lo
 
 
 //NYT routes
-router.get('/searchauthorNYT/:author',controller.searchAuthorNYT); // localhost:3000/books/searchauthorNYT/
-router.get('/searchtitleNYT/:title',controller.searchTitleNYT); // localhost:3000/books/searchTitleNYT/
+router.get('/searchauthorNYT/:author',NYTController.searchAuthorNYT); // localhost:3000/books/searchauthorNYT/
+router.get('/searchtitleNYT/:title',NYTController.searchTitleNYT); // localhost:3000/books/searchTitleNYT/
 module.exports = router;
