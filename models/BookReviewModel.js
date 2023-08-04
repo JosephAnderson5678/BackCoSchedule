@@ -10,8 +10,8 @@ const Book = db.define('book', {
     },
     title: Sequelize.STRING,
     author: Sequelize.STRING,
-    NYTSummary: Sequelize.STRING,
-    review: Sequelize.STRING,
+    NYTSummary: Sequelize.TEXT,
+    review: Sequelize.TEXT,
     stars: Sequelize.FLOAT,
     /* Why no ISBN number? Books can have zero or multiple depending on factors like what region it is and which edition it is. 
         This is confusing for users to handle so I am intentionally omitting it. If I was to include it I would do

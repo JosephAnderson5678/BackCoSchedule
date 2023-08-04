@@ -125,6 +125,7 @@ exports.updateReview = (req, res, next) => {
     res.status(400)
     .json({ message: "Mandatory field is missing/null. " })
   }else{
+
     Book.findByPk(id)
     .then(book => {
       if (!book) {
@@ -140,10 +141,10 @@ exports.updateReview = (req, res, next) => {
     .then(result => {
       res.status(200).json({message: 'Book updated!', book: result});
     })
-    
+   }
+  }
+
   
-  }
-  }
 
 
   //delete Review
