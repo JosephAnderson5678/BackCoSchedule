@@ -1,0 +1,1 @@
+Add try catches with error codes to the API calls. Look up how to do this in Axios. 
